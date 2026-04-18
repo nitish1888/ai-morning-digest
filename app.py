@@ -84,19 +84,11 @@ async def refresh_articles():
         _state["is_loading"] = False
 
 
-async def periodic_refresh(interval_minutes: int):
-    while True:
-        await refresh_articles()
-        await asyncio.sleep(interval_minutes * 60)
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _state["config"] = load_config()
-    interval = _state["config"].get("server", {}).get("refresh_interval_minutes", 60)
-    task = asyncio.create_task(periodic_refresh(interval))
+    asyncio.create_task(refresh_articles())
     yield
-    task.cancel()
 
 
 app = FastAPI(

@@ -187,8 +187,6 @@ document.querySelectorAll('.quick-tags button').forEach(b=>{
     };
 });
 
-setInterval(()=>{if(articles.length&&!searching)fetchArticles()},60000);
-setInterval(fetchNewsFeed,300000);
 fetchArticles();
 fetchNewsFeed();
 })();
