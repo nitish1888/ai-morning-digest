@@ -75,6 +75,14 @@ def _estimate_reading_time(summary: str) -> str:
     return f"{minutes} min read"
 
 
+def _is_english(text: str) -> bool:
+    """Quick heuristic: reject if most chars are non-ASCII (CJK, Cyrillic, Arabic, etc.)."""
+    if not text:
+        return True
+    ascii_chars = sum(1 for c in text if ord(c) < 128)
+    return (ascii_chars / len(text)) > 0.6
+
+
 def _parse_date(entry) -> Optional[datetime]:
     for attr in ("published_parsed", "updated_parsed"):
         parsed = getattr(entry, attr, None)
@@ -146,7 +154,7 @@ async def _fetch_feed(session: aiohttp.ClientSession, feed_cfg: dict,
             continue
 
         title = _clean_html(getattr(entry, "title", ""))
-        if not title:
+        if not title or not _is_english(title):
             continue
 
         summary = _clean_html(getattr(entry, "summary", ""))[:600]
@@ -323,7 +331,7 @@ async def _live_google_news(session: aiohttp.ClientSession,
     for entry in feed.entries[:limit]:
         title = _clean_html(getattr(entry, "title", ""))
         link = getattr(entry, "link", "")
-        if not title or not link:
+        if not title or not link or not _is_english(title):
             continue
         summary = _clean_html(getattr(entry, "summary", ""))[:400]
         pub_date = _parse_date(entry)
@@ -363,7 +371,7 @@ async def _live_medium_tags(session: aiohttp.ClientSession,
         for entry in feed.entries[:8]:
             title = _clean_html(getattr(entry, "title", ""))
             link = getattr(entry, "link", "")
-            if not title or not link:
+            if not title or not link or not _is_english(title):
                 continue
             summary = _clean_html(getattr(entry, "summary", ""))[:400]
             pub_date = _parse_date(entry)
@@ -395,7 +403,7 @@ async def _live_hn_algolia(session: aiohttp.ClientSession,
     for hit in data.get("hits", []):
         title = hit.get("title", "")
         url = hit.get("url", "")
-        if not title or not url:
+        if not title or not url or not _is_english(title):
             continue
         points = hit.get("points", 0) or 0
         comments = hit.get("num_comments", 0) or 0
@@ -433,7 +441,7 @@ async def _live_arxiv(session: aiohttp.ClientSession,
     for entry in feed.entries[:limit]:
         title = _clean_html(getattr(entry, "title", "")).replace("\n", " ")
         link = getattr(entry, "link", "")
-        if not title or not link:
+        if not title or not link or not _is_english(title):
             continue
         summary = _clean_html(getattr(entry, "summary", ""))[:400]
         pub_date = _parse_date(entry)
