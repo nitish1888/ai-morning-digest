@@ -88,19 +88,16 @@ profile:
 
 # Classification tags used by Gemma 4 to categorize articles
 classification_tags:
+  - "AI Architect"
   - "LLM & Foundation Models"
   - "AI Agents & Autonomy"
   - "RAG & Retrieval"
-  - "ML Architecture & Systems"
   - "GenAI Applications"
-  - "AI Architect"
   - "Computer Vision"
   - "NLP & Language"
   - "MLOps & Deployment"
   - "AI Safety & Ethics"
-  - "Data Science & Analytics"
   - "Research & Papers"
-  - "Tutorials & How-To"
   - "Industry News"
   - "Claude & Anthropic"
 

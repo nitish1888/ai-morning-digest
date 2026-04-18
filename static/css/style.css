@@ -95,6 +95,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 .f-chip.f-all{font-weight:600;border-color:var(--border2);color:var(--text2)}
 .f-chip.f-all.active{background:#10b981;border-color:#10b981;color:#fff;box-shadow:0 0 12px rgba(16,185,129,.3)}
 .f-chip.f-all:not(.active){background:rgba(251,113,133,.06);border-color:rgba(251,113,133,.25);color:#fb7185;font-weight:700}
+.f-chip.pinned{border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.06)}
+.f-chip.pinned.active{background:#d97706;border-color:#d97706;color:#fff;box-shadow:0 0 14px rgba(217,119,6,.35)}
+.f-chip.dim{opacity:.45}
 
 /* ── Layout ── */
 .layout{display:grid;grid-template-columns:1fr 280px;gap:28px;padding:12px 0 60px;align-items:start}

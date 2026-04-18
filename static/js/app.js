@@ -25,11 +25,17 @@ function setFilter(f){
     render(articles);
 }
 
+const PINNED_TAGS=['AI Architect'];
+
 function buildFilters(list){
     const tags=new Set();
     list.forEach(a=>{if(a.classification)tags.add(a.classification)});
+    PINNED_TAGS.forEach(t=>tags.add(t));
     const row=$('filterRow');row.innerHTML='';
     if(!tags.size){$('filterSection').style.display='none';return}
+
+    const tagCounts={};
+    list.forEach(a=>{if(a.classification){tagCounts[a.classification]=(tagCounts[a.classification]||0)+1}});
 
     const allBtn=document.createElement('button');
     allBtn.innerHTML=filter==='all'?'&#10003; All':'&#8592; All';
@@ -37,9 +43,20 @@ function buildFilters(list){
     allBtn.onclick=()=>setFilter('all');
     row.appendChild(allBtn);
 
-    [...tags].sort().forEach(t=>{
-        const b=document.createElement('button');b.textContent=t;
-        b.className='f-chip'+(filter===t?' active':'');
+    const sorted=[...tags].sort((a,b)=>{
+        const ai=PINNED_TAGS.indexOf(a),bi=PINNED_TAGS.indexOf(b);
+        if(ai>=0&&bi>=0)return ai-bi;
+        if(ai>=0)return -1;
+        if(bi>=0)return 1;
+        return a.localeCompare(b);
+    });
+
+    sorted.forEach(t=>{
+        const cnt=tagCounts[t]||0;
+        const b=document.createElement('button');
+        b.textContent=t+(cnt?` (${cnt})`:'');
+        b.className='f-chip'+(filter===t?' active':'')+(PINNED_TAGS.includes(t)?' pinned':'');
+        if(!cnt)b.classList.add('dim');
         b.onclick=()=>setFilter(t);
         row.appendChild(b);
     });

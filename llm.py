@@ -219,6 +219,8 @@ def _build_scoring_prompt(profile: dict, articles_batch: list[dict]) -> str:
         f'{{"index":N, "score":0.0-1.0, "tag":"one tag from Tags list", '
         f'"problem_summary":"1 sentence: what problem does this article solve or address", '
         f'"insight":"1 sentence: why this matters to this architect"}}\n'
+        f'Tag guidance: Use "AI Architect" for articles about system design, architecture patterns, '
+        f'scalable ML systems, platform engineering, infra decisions, or senior/staff-level AI topics. '
         f"Be strict: beginner/generic = low score. Advanced ML, architecture, GenAI = high."
     )
 
