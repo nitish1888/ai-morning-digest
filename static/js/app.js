@@ -53,7 +53,7 @@ function buildFilters(list){
     $('filterSection').style.display='block';
 }
 
-// ── Render cards — minimal: rank, title, source, time ──
+// ── Render cards ──
 
 function render(list){
     const grid=$('cardsGrid');grid.innerHTML='';
@@ -62,10 +62,12 @@ function render(list){
 
     show.forEach((a,i)=>{
         const hasImg=!!a.image_url;
-
         const imgHtml=hasImg
             ?`<div class="card-img"><img src="${esc(a.image_url)}" alt="" loading="lazy" onerror="this.parentNode.style.display='none';this.closest('.card').classList.remove('has-img')"></div>`
             :'';
+
+        // Pick best summary: problem_summary > insight > summary
+        const desc=a.problem_summary||a.insight||a.summary||'';
 
         const el=document.createElement('article');
         el.className='card'+(hasImg?' has-img':'');
@@ -73,6 +75,7 @@ function render(list){
             <div class="card-body">
                 <div class="card-num">${i+1}</div>
                 <div class="card-title"><a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.title)}</a></div>
+                ${desc?`<div class="card-desc">${esc(desc)}</div>`:''}
                 <div class="card-sub">
                     <span class="src">${esc(a.source)}</span>
                     ${a.classification?'<span class="dot"></span><span>'+esc(a.classification)+'</span>':''}
