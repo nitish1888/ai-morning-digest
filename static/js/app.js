@@ -16,7 +16,6 @@ const TAG_COLORS={
 
 function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function ago(iso){if(!iso)return '';const h=Math.floor((Date.now()-new Date(iso))/36e5);return h<1?'just now':h<24?h+'h':Math.floor(h/24)+'d'}
-function tagStyle(tag){const c=TAG_COLORS[tag]||'139,92,246';return `background:rgba(${c},.07);border:1px solid rgba(${c},.15);color:rgba(${c},1)`}
 
 // ── Filters ──
 
@@ -46,7 +45,7 @@ function buildFilters(list){
     });
 
     const clr=document.createElement('button');
-    clr.innerHTML='&times; Clear filter';
+    clr.textContent='\u00d7 Back to all';
     clr.className='f-clear'+(filter!=='all'?' show':'');
     clr.onclick=()=>setFilter('all');
     row.appendChild(clr);
@@ -54,18 +53,14 @@ function buildFilters(list){
     $('filterSection').style.display='block';
 }
 
-// ── Render article cards with images ──
+// ── Render cards — minimal: rank, title, source, time ──
 
 function render(list){
     const grid=$('cardsGrid');grid.innerHTML='';
     const show=filter==='all'?list:list.filter(a=>a.classification===filter);
-    if(!show.length){grid.innerHTML='<div class="no-results">No articles match this filter</div>';return}
+    if(!show.length){grid.innerHTML='<div class="no-results">No articles match "'+esc(filter)+'"</div>';return}
 
     show.forEach((a,i)=>{
-        const pct=Math.round((a.score||0)*100);
-        const tagBadge=a.classification?`<span class="card-tag" style="${tagStyle(a.classification)}">${esc(a.classification)}</span>`:'';
-        const insight=a.insight?`<div class="card-insight"><span>${esc(a.insight)}</span><span class="g4">Gemma</span></div>`:'';
-        const tags=(a.tags||[]).slice(0,3).map(t=>`<span class="tag">${esc(t)}</span>`).join('');
         const hasImg=!!a.image_url;
 
         const imgHtml=hasImg
@@ -77,13 +72,13 @@ function render(list){
         el.innerHTML=`
             <div class="card-body">
                 <div class="card-num">${i+1}</div>
-                <div class="card-head">
-                    <span class="card-src">${esc(a.source)}</span>${tagBadge}<span class="card-pct">${pct}%</span>
-                </div>
                 <div class="card-title"><a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.title)}</a></div>
-                ${insight}
-                <div class="card-summary">${esc(a.summary||'')}</div>
-                <div class="card-foot">${tags}<span class="time">${ago(a.published)}</span></div>
+                <div class="card-sub">
+                    <span class="src">${esc(a.source)}</span>
+                    ${a.classification?'<span class="dot"></span><span>'+esc(a.classification)+'</span>':''}
+                    <span class="dot"></span>
+                    <span>${ago(a.published)}</span>
+                </div>
             </div>${imgHtml}`;
         grid.appendChild(el);
     });
@@ -95,12 +90,12 @@ function showView(v){
     $('emptyState').style.display=v==='empty'?'flex':'none';
 }
 
-// ── Sidebar with large images ──
+// ── Sidebar — max 10 items ──
 
 async function fetchNewsFeed(){
     try{
         const d=await(await fetch(API.news)).json();
-        const items=d.items||[];
+        const items=(d.items||[]).slice(0,10);
         const wrap=$('sidebarItems');
         if(!items.length){wrap.innerHTML='<div class="sidebar-loading">No news yet</div>';return}
         wrap.innerHTML='';
@@ -129,8 +124,6 @@ async function fetchArticles(){
     try{
         const d=await(await fetch(API.articles)).json();
         if(d.is_loading&&!d.articles.length){
-            $('loadingTitle').textContent='Scanning AI/ML sources...';
-            $('loadingSub').textContent='Scoring articles from TDS, Medium, ArXiv & more';
             showView('loading');$('refreshBtn').classList.add('spinning');startPoll();return;
         }
         $('refreshBtn').classList.remove('spinning');stopPoll();
@@ -151,7 +144,7 @@ async function doSearch(q){
     searching=true;
     $('searchClear').style.display='grid';$('searchKbd').style.display='none';
     $('loadingTitle').textContent=`Searching "${q}"...`;
-    $('loadingSub').textContent='Fetching live + re-ranking with LLM';
+    $('loadingSub').textContent='Fetching live + re-ranking';
     showView('loading');
     document.querySelectorAll('.quick-tags button').forEach(b=>b.classList.remove('active'));
 
@@ -163,7 +156,7 @@ async function doSearch(q){
             showView('empty');return;
         }
         articles=d.articles;filter='all';buildFilters(articles);render(articles);showView('articles');
-    }catch(e){console.error(e);$('emptyTitle').textContent='Search failed';showView('empty')}
+    }catch(e){console.error(e);showView('empty')}
 }
 
 function clearSearch(){
@@ -176,8 +169,6 @@ function clearSearch(){
 async function triggerRefresh(){
     searching=false;clearSearch();
     $('refreshBtn').classList.add('spinning');showView('loading');
-    $('loadingTitle').textContent='Scanning AI/ML sources...';
-    $('loadingSub').textContent='Scoring articles from TDS, Medium, ArXiv & more';
     try{await fetch(API.refresh,{method:'POST'});startPoll()}catch(e){$('refreshBtn').classList.remove('spinning')}
 }
 
@@ -199,7 +190,6 @@ document.querySelectorAll('.quick-tags button').forEach(b=>{
 
 setInterval(()=>{if(articles.length&&!searching)fetchArticles()},60000);
 setInterval(fetchNewsFeed,300000);
-
 fetchArticles();
 fetchNewsFeed();
 })();

@@ -490,7 +490,7 @@ async def fetch_news_feed() -> list[dict]:
     unique.sort(key=lambda a: a.published or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
 
     items = []
-    for a in unique[:20]:
+    for a in unique[:10]:
         items.append({
             "title": a.title,
             "url": a.url,
