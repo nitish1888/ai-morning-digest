@@ -25,38 +25,23 @@ function setFilter(f){
     render(articles);
 }
 
-const PINNED_TAGS=['AI Architect'];
-
 function buildFilters(list){
     const tags=new Set();
     list.forEach(a=>{if(a.classification)tags.add(a.classification)});
-    PINNED_TAGS.forEach(t=>tags.add(t));
+    tags.add('AI Architect');
     const row=$('filterRow');row.innerHTML='';
     if(!tags.size){$('filterSection').style.display='none';return}
 
-    const tagCounts={};
-    list.forEach(a=>{if(a.classification){tagCounts[a.classification]=(tagCounts[a.classification]||0)+1}});
-
     const allBtn=document.createElement('button');
-    allBtn.innerHTML=filter==='all'?'&#10003; All':'&#8592; All';
-    allBtn.className='f-chip f-all'+(filter==='all'?' active':'');
+    allBtn.textContent='All';
+    allBtn.className='f-chip'+(filter==='all'?' active':'');
     allBtn.onclick=()=>setFilter('all');
     row.appendChild(allBtn);
 
-    const sorted=[...tags].sort((a,b)=>{
-        const ai=PINNED_TAGS.indexOf(a),bi=PINNED_TAGS.indexOf(b);
-        if(ai>=0&&bi>=0)return ai-bi;
-        if(ai>=0)return -1;
-        if(bi>=0)return 1;
-        return a.localeCompare(b);
-    });
-
-    sorted.forEach(t=>{
-        const cnt=tagCounts[t]||0;
+    [...tags].sort().forEach(t=>{
         const b=document.createElement('button');
-        b.textContent=t+(cnt?` (${cnt})`:'');
-        b.className='f-chip'+(filter===t?' active':'')+(PINNED_TAGS.includes(t)?' pinned':'');
-        if(!cnt)b.classList.add('dim');
+        b.textContent=t;
+        b.className='f-chip'+(filter===t?' active':'');
         b.onclick=()=>setFilter(t);
         row.appendChild(b);
     });
