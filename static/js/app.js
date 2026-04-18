@@ -32,8 +32,8 @@ function buildFilters(list){
     if(!tags.size){$('filterSection').style.display='none';return}
 
     const allBtn=document.createElement('button');
-    allBtn.textContent='All';
-    allBtn.className='f-chip'+(filter==='all'?' active':'');
+    allBtn.innerHTML=filter==='all'?'&#10003; All':'&#8592; All';
+    allBtn.className='f-chip f-all'+(filter==='all'?' active':'');
     allBtn.onclick=()=>setFilter('all');
     row.appendChild(allBtn);
 
@@ -43,12 +43,6 @@ function buildFilters(list){
         b.onclick=()=>setFilter(t);
         row.appendChild(b);
     });
-
-    const clr=document.createElement('button');
-    clr.textContent='\u00d7 Back to all';
-    clr.className='f-clear'+(filter!=='all'?' show':'');
-    clr.onclick=()=>setFilter('all');
-    row.appendChild(clr);
 
     $('filterSection').style.display='block';
 }
