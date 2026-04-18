@@ -31,24 +31,44 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 
 .shell{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 28px}
 
-/* ── Topbar ── */
-.topbar{padding:16px 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:8px}
-.brand{display:flex;align-items:center;gap:10px}
-.brand-icon{width:28px;height:28px;flex-shrink:0}
-.brand-name{font-size:.95rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.brand-sub{font-size:.52rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
-.topbar-right{display:flex;align-items:center;gap:14px}
-.meta{font-size:.65rem;color:var(--text3)}
-.meta span{color:var(--text2);font-family:var(--mono);font-weight:600}
-.avatar{width:26px;height:26px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:.65rem;font-weight:700;color:#fff}
-.icon-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text3);display:grid;place-items:center;cursor:pointer;transition:all .2s}
-.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+/* ── Header ── */
+.topbar{
+    background:linear-gradient(180deg,rgba(19,19,25,.95) 0%,rgba(11,11,16,.98) 100%);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-bottom:1px solid rgba(255,255,255,.06);
+    position:sticky;top:0;z-index:50;
+    margin:0 -28px;padding:0 28px;
+}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;height:56px;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.brand-logo{width:34px;height:34px;flex-shrink:0;filter:drop-shadow(0 2px 8px rgba(99,102,241,.3))}
+.brand-logo svg{width:100%;height:100%}
+.brand-text{display:flex;flex-direction:column;gap:1px}
+.brand-name{font-size:1.05rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,#e0e0f0 0%,#a78bfa 50%,#818cf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.brand-sub{font-size:.58rem;color:var(--text3);font-weight:500;letter-spacing:.12em;text-transform:uppercase}
+
+.topbar-center{flex:1;display:flex;justify-content:center}
+.stat-pills{display:flex;gap:6px;align-items:center}
+.stat-pill{display:flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:100px;background:var(--surface);border:1px solid var(--border2);font-size:.62rem}
+.stat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.stat-dot.green{background:#34d399;box-shadow:0 0 6px rgba(52,211,153,.4)}
+.stat-dot.purple{background:#8b5cf6;box-shadow:0 0 6px rgba(139,92,246,.4)}
+.stat-label{color:var(--text3);font-weight:500}
+.stat-val{color:var(--text);font-family:var(--mono);font-weight:700;font-size:.65rem}
+.stat-clock{width:12px;height:12px;color:var(--text3);flex-shrink:0}
+
+.topbar-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.engine-badge{display:flex;align-items:center;gap:4px;height:26px;padding:0 10px;border-radius:100px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);font-size:.58rem;font-weight:600;color:#a78bfa}
+.engine-badge svg{width:11px;height:11px;color:#a78bfa}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:.7rem;font-weight:700;color:#fff;box-shadow:0 2px 8px rgba(99,102,241,.25)}
+.icon-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:var(--text3);display:grid;place-items:center;cursor:pointer;transition:all .2s}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(139,92,246,.08)}
 .icon-btn svg{width:14px;height:14px}
 .icon-btn.spinning .spin-target{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── Search ── */
-.search-area{padding:14px 0 6px}
+.search-area{padding:18px 0 6px}
 .search-box{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0 14px;height:42px;transition:border-color .2s,box-shadow .2s}
 .search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
 .s-icon{width:15px;height:15px;color:var(--text3);flex-shrink:0}
@@ -145,11 +165,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 @media(max-width:920px){
     .layout{grid-template-columns:1fr}
     .sidebar{position:static;max-height:360px;margin-top:12px}
-    .meta{display:none}
+    .topbar-center{display:none}
+    .engine-badge{display:none}
     .card.has-img{grid-template-columns:1fr 110px}
 }
 @media(max-width:480px){
     .shell{padding:0 14px}
+    .topbar{margin:0 -14px;padding:0 14px}
     .brand-sub{display:none}
     .card.has-img{grid-template-columns:1fr}
     .card-img{height:120px}
