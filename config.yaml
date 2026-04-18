@@ -1,0 +1,239 @@
+profile:
+  name: "Nit Singh"
+  role: "AI/ML Architect & Expert"
+  years_experience: 13
+  bio: "13-year AI/ML veteran now leading architecture for the team. Deep expertise in generative AI, LLMs, and production ML systems."
+
+  primary_interests:
+    - "machine learning"
+    - "deep learning"
+    - "artificial intelligence"
+    - "generative AI"
+    - "large language models"
+    - "LLM"
+    - "transformer architecture"
+    - "neural networks"
+    - "AI agents"
+    - "RAG"
+    - "retrieval augmented generation"
+    - "Claude"
+    - "Anthropic"
+
+  architecture_interests:
+    - "ML system design"
+    - "MLOps"
+    - "model deployment"
+    - "AI infrastructure"
+    - "distributed training"
+    - "model serving"
+    - "feature store"
+    - "ML pipeline"
+    - "AI platform"
+    - "vector database"
+    - "embedding"
+    - "model optimization"
+    - "AI governance"
+    - "responsible AI"
+    - "AI strategy"
+    - "system architecture"
+    - "microservices"
+    - "scalability"
+    - "production ML"
+    - "AI at scale"
+
+  cutting_edge_interests:
+    - "GPT"
+    - "Claude"
+    - "Gemini"
+    - "Anthropic"
+    - "multimodal"
+    - "diffusion model"
+    - "AI coding"
+    - "AI agent"
+    - "autonomous agent"
+    - "fine-tuning"
+    - "RLHF"
+    - "prompt engineering"
+    - "chain of thought"
+    - "mixture of experts"
+    - "state space model"
+    - "vision language model"
+    - "text to image"
+    - "text to video"
+    - "AI safety"
+    - "alignment"
+    - "reasoning"
+    - "MCP"
+    - "model context protocol"
+    - "tool use"
+    - "function calling"
+
+  data_science_interests:
+    - "data science"
+    - "data engineering"
+    - "feature engineering"
+    - "model evaluation"
+    - "NLP"
+    - "computer vision"
+    - "recommendation system"
+    - "time series"
+    - "anomaly detection"
+
+  negative_keywords:
+    - "cryptocurrency"
+    - "blockchain"
+    - "NFT"
+    - "stock trading"
+    - "sports betting"
+
+# Classification tags used by Gemma 4 to categorize articles
+classification_tags:
+  - "LLM & Foundation Models"
+  - "AI Agents & Autonomy"
+  - "RAG & Retrieval"
+  - "ML Architecture & Systems"
+  - "GenAI Applications"
+  - "Computer Vision"
+  - "NLP & Language"
+  - "MLOps & Deployment"
+  - "AI Safety & Ethics"
+  - "Data Science & Analytics"
+  - "Research & Papers"
+  - "Tutorials & How-To"
+  - "Industry News"
+  - "Claude & Anthropic"
+
+sources:
+  rss_feeds:
+    # === Towards Data Science & Medium ===
+    - url: "https://towardsdatascience.com/feed"
+      name: "Towards Data Science"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/machine-learning"
+      name: "Medium - Machine Learning"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/artificial-intelligence"
+      name: "Medium - AI"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/data-science"
+      name: "Medium - Data Science"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/generative-ai"
+      name: "Medium - Generative AI"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/llm"
+      name: "Medium - LLM"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/deep-learning"
+      name: "Medium - Deep Learning"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/mlops"
+      name: "Medium - MLOps"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/ai-agent"
+      name: "Medium - AI Agents"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/claude"
+      name: "Medium - Claude"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/anthropic"
+      name: "Medium - Anthropic"
+      category: "tutorial"
+      priority: true
+    - url: "https://medium.com/feed/tag/rag"
+      name: "Medium - RAG"
+      category: "tutorial"
+      priority: true
+
+    # === Research ===
+    - url: "https://arxiv.org/rss/cs.AI"
+      name: "ArXiv - AI"
+      category: "research"
+    - url: "https://arxiv.org/rss/cs.LG"
+      name: "ArXiv - Machine Learning"
+      category: "research"
+    - url: "https://arxiv.org/rss/cs.CL"
+      name: "ArXiv - NLP"
+      category: "research"
+
+    # === Industry & Claude/Anthropic ===
+    - url: "https://www.anthropic.com/rss.xml"
+      name: "Anthropic Blog"
+      category: "industry"
+      priority: true
+    - url: "https://blog.google/technology/ai/rss/"
+      name: "Google AI Blog"
+      category: "industry"
+    - url: "https://openai.com/blog/rss.xml"
+      name: "OpenAI Blog"
+      category: "industry"
+    - url: "https://huggingface.co/blog/feed.xml"
+      name: "Hugging Face"
+      category: "community"
+
+    # === News ===
+    - url: "https://techcrunch.com/category/artificial-intelligence/feed/"
+      name: "TechCrunch AI"
+      category: "news"
+    - url: "https://www.marktechpost.com/feed/"
+      name: "MarkTechPost"
+      category: "news"
+    - url: "https://www.technologyreview.com/feed/"
+      name: "MIT Tech Review"
+      category: "news"
+
+    # === Blogs & Newsletters ===
+    - url: "https://lilianweng.github.io/index.xml"
+      name: "Lilian Weng"
+      category: "research"
+    - url: "https://machinelearningmastery.com/feed/"
+      name: "ML Mastery"
+      category: "tutorial"
+
+  hackernews:
+    enabled: true
+    min_score: 50
+    ai_keywords:
+      - "AI"
+      - "ML"
+      - "LLM"
+      - "GPT"
+      - "Claude"
+      - "Anthropic"
+      - "neural"
+      - "deep learning"
+      - "machine learning"
+      - "generative"
+      - "transformer"
+      - "language model"
+      - "artificial intelligence"
+      - "OpenAI"
+      - "Gemini"
+      - "data science"
+      - "agent"
+      - "RAG"
+
+digest:
+  top_n: 10
+  max_age_hours: 36
+  category_boost:
+    tutorial: 1.20
+    research: 1.15
+    industry: 1.10
+    community: 1.05
+    news: 1.0
+
+server:
+  host: "0.0.0.0"
+  port: 8888
+  refresh_interval_minutes: 60

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI/ML Morning Digest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="ambient-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+
+    <div class="app">
+        <!-- Top bar: logo + profile -->
+        <header class="topbar">
+            <div class="topbar-inner">
+                <div class="brand">
+                    <svg class="brand-icon" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="url(#g)"/><path d="M7 20l7-12 7 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#fff" opacity=".8"/><defs><linearGradient id="g" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs></svg>
+                    <div>
+                        <div class="brand-name">Morning Digest</div>
+                        <div class="brand-sub">Powered by Gemma 4</div>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="meta" id="metaInfo">
+                        <span id="metaCount">--</span> articles &middot; <span id="metaScanned">--</span> scanned &middot; <span id="metaTime">--</span>
+                    </div>
+                    <div class="avatar" title="{{ profile_name }} &middot; {{ profile_role }}">{{ profile_name[0] }}</div>
+                    <button class="icon-btn" id="refreshBtn" title="Refresh all sources">
+                        <svg class="spin-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0115.36-6.36L21 8M3 22v-6h6M21 12a9 9 0 01-15.36 6.36L3 16"/></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search -->
+        <section class="search-area">
+            <div class="search-box" id="searchBox">
+                <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input id="searchInput" type="text" placeholder="Search across all articles or type a topic to fetch live..." autocomplete="off" spellcheck="false">
+                <kbd class="s-kbd" id="searchKbd">Enter</kbd>
+                <button class="s-clear" id="searchClear" style="display:none" title="Clear">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="quick-tags" id="quickTags">
+                <button data-q="RAG retrieval augmented generation">RAG</button>
+                <button data-q="Claude Anthropic MCP tool use">Claude</button>
+                <button data-q="LLM architecture scaling transformer">LLM Arch</button>
+                <button data-q="AI agents autonomous coding">AI Agents</button>
+                <button data-q="MLOps model deployment production pipeline">MLOps</button>
+                <button data-q="computer vision multimodal">Vision</button>
+                <button data-q="fine-tuning RLHF alignment">Fine-tuning</button>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters" id="filterSection" style="display:none">
+            <div class="filter-row" id="filterRow"></div>
+        </section>
+
+        <!-- Content -->
+        <main class="content">
+            <!-- Loading -->
+            <div class="state-msg" id="loadingState">
+                <div class="loader"><span></span><span></span><span></span></div>
+                <p class="state-title" id="loadingTitle">Scanning AI/ML sources...</p>
+                <p class="state-sub" id="loadingSub">Gemma 4 is scoring articles from TDS, Medium, ArXiv & more</p>
+            </div>
+
+            <!-- Articles -->
+            <div id="articlesWrap" style="display:none">
+                <div class="cards" id="cardsGrid"></div>
+            </div>
+
+            <!-- Empty -->
+            <div class="state-msg" id="emptyState" style="display:none">
+                <p class="state-title" id="emptyTitle">No articles found</p>
+                <p class="state-sub" id="emptySub">Try a different search or hit refresh</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

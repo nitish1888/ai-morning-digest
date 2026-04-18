@@ -1,0 +1,35 @@
+name: Morning Digest Refresh
+
+on:
+  schedule:
+    # 6:00 AM IST = 00:30 UTC  (adjust to your timezone)
+    - cron: "30 0 * * *"
+  workflow_dispatch:  # manual trigger button in GitHub UI
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger morning refresh
+        run: |
+          echo "Triggering digest refresh at $(date -u)..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "${{ secrets.APP_URL }}/api/refresh")
+          echo "Response: $RESPONSE"
+          if [ "$RESPONSE" != "200" ]; then
+            echo "Warning: refresh returned $RESPONSE"
+          fi
+
+      - name: Wait for scoring to finish
+        run: sleep 120
+
+      - name: Verify articles are ready
+        run: |
+          DATA=$(curl -s "${{ secrets.APP_URL }}/api/articles")
+          COUNT=$(echo "$DATA" | python3 -c "import sys,json; print(len(json.load(sys.stdin).get('articles',[])))")
+          echo "Articles ready: $COUNT"
+          if [ "$COUNT" -lt 1 ]; then
+            echo "Warning: no articles after refresh"
+            exit 1
+          fi
+          echo "Morning digest ready with $COUNT articles"

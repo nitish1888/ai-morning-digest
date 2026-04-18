@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ai-morning-digest
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: LLM_BACKEND
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: gemma2-9b-it
+    healthCheckPath: /api/health
+    autoDeploy: true
