@@ -33,6 +33,7 @@ class Article:
     insight: str = ""
     classification: str = ""
     problem_summary: str = ""
+    image_url: str = ""
 
     def __hash__(self):
         return hash(self.url)
@@ -57,6 +58,7 @@ class Article:
             "insight": self.insight,
             "classification": self.classification,
             "problem_summary": self.problem_summary,
+            "image_url": self.image_url,
         }
 
 
@@ -82,6 +84,40 @@ def _parse_date(entry) -> Optional[datetime]:
             except Exception:
                 pass
     return None
+
+
+def _extract_image(entry) -> str:
+    """Extract thumbnail/image URL from RSS entry using multiple strategies."""
+    # media:thumbnail (Google News, many feeds)
+    thumbs = getattr(entry, "media_thumbnail", [])
+    if thumbs and isinstance(thumbs, list):
+        url = thumbs[0].get("url", "")
+        if url:
+            return url
+
+    # media:content with image type
+    media = getattr(entry, "media_content", [])
+    if media and isinstance(media, list):
+        for m in media:
+            if "image" in m.get("type", "") or m.get("medium") == "image":
+                url = m.get("url", "")
+                if url:
+                    return url
+
+    # enclosure with image type
+    enclosures = getattr(entry, "enclosures", [])
+    if enclosures:
+        for enc in enclosures:
+            if "image" in enc.get("type", ""):
+                return enc.get("href", "") or enc.get("url", "")
+
+    # og:image or img in summary HTML
+    raw_summary = getattr(entry, "summary", "")
+    img_match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', raw_summary)
+    if img_match:
+        return img_match.group(1)
+
+    return ""
 
 
 async def _fetch_feed(session: aiohttp.ClientSession, feed_cfg: dict,
@@ -135,6 +171,7 @@ async def _fetch_feed(session: aiohttp.ClientSession, feed_cfg: dict,
             tags=tags,
             priority_source=is_priority,
             reading_time=_estimate_reading_time(summary),
+            image_url=_extract_image(entry),
         ))
 
     logger.info(f"[{name}] Fetched {len(articles)} articles")
@@ -410,6 +447,61 @@ async def _live_arxiv(session: aiohttp.ClientSession,
         ))
     logger.info(f"[LiveArXiv] fetched {len(articles)} for '{query}'")
     return articles
+
+
+_NEWS_FEEDS = [
+    {"url": "https://news.google.com/rss/search?q=LLM+model+release+AI&hl=en&gl=US&ceid=US:en",
+     "name": "Google News", "category": "news"},
+    {"url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+     "name": "TechCrunch AI", "category": "news"},
+    {"url": "https://www.marktechpost.com/feed/",
+     "name": "MarkTechPost", "category": "news"},
+    {"url": "https://huggingface.co/blog/feed.xml",
+     "name": "Hugging Face", "category": "news"},
+    {"url": "https://blog.google/technology/ai/rss/",
+     "name": "Google AI", "category": "news"},
+]
+
+
+async def fetch_news_feed() -> list[dict]:
+    """Fetch latest AI/LLM news with images for the sidebar."""
+    max_age = timedelta(hours=72)
+    connector = aiohttp.TCPConnector(limit=15, ssl=False)
+    async with aiohttp.ClientSession(
+        connector=connector,
+        headers={"User-Agent": "AI-News-Agent/1.0 (Personal Digest)"}
+    ) as session:
+        tasks = [_fetch_feed(session, f, max_age) for f in _NEWS_FEEDS]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    all_articles = []
+    for r in results:
+        if isinstance(r, list):
+            all_articles.extend(r)
+
+    seen = set()
+    unique = []
+    for a in all_articles:
+        key = re.sub(r"\W+", "", a.title.lower())
+        if key not in seen:
+            seen.add(key)
+            unique.append(a)
+
+    unique.sort(key=lambda a: a.published or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
+
+    items = []
+    for a in unique[:20]:
+        items.append({
+            "title": a.title,
+            "url": a.url,
+            "source": a.source,
+            "image_url": a.image_url,
+            "published": a.published.isoformat() if a.published else None,
+            "summary": a.summary[:150] if a.summary else "",
+        })
+
+    logger.info(f"[NewsFeed] {len(items)} items, {sum(1 for i in items if i['image_url'])} with images")
+    return items
 
 
 async def live_search_articles(query: str) -> list[Article]:

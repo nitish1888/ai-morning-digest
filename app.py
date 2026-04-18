@@ -18,7 +18,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
 from scorer import RelevanceScorer
-from sources import fetch_all_articles, live_search_articles
+from sources import fetch_all_articles, live_search_articles, fetch_news_feed
 from llm import search_with_gemma
 
 logging.basicConfig(
@@ -34,6 +34,7 @@ CONFIG_PATH = BASE_DIR / "config.yaml"
 _state: dict = {
     "articles": [],
     "all_articles": [],
+    "news_feed": [],
     "last_refresh": None,
     "config": {},
     "is_loading": False,
@@ -71,6 +72,12 @@ async def refresh_articles():
         _state["last_refresh"] = datetime.now(timezone.utc).isoformat()
         _state["total_scanned"] = len(raw_articles)
         logger.info(f"Refresh complete. {len(raw_articles)} scanned, top {len(ranked)} selected. {len(all_dicts)} stored for search.")
+
+        try:
+            _state["news_feed"] = await fetch_news_feed()
+            logger.info(f"News feed: {len(_state['news_feed'])} items loaded")
+        except Exception as e:
+            logger.warning(f"News feed fetch failed: {e}")
     except Exception as e:
         logger.error(f"Refresh failed: {e}", exc_info=True)
     finally:
@@ -181,6 +188,11 @@ async def search_articles(body: SearchRequest):
         "live_fetched": len(live_dicts),
         "total_pool": len(merged),
     })
+
+
+@app.get("/api/news-feed")
+async def get_news_feed():
+    return JSONResponse({"items": _state.get("news_feed", [])})
 
 
 @app.post("/api/refresh")
