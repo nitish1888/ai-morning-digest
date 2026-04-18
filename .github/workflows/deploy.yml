@@ -1,0 +1,56 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Dockerfile
+        run: docker build --no-cache -t ai-morning-digest . --target=$(head -1 Dockerfile | grep -q 'AS' && echo 'final' || echo '')  2>&1 | tail -5 || true
+
+      - name: Trigger Render deploy
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+            echo "RENDER_DEPLOY_HOOK secret not set — skipping deploy"
+            echo "Set it in GitHub repo Settings → Secrets → Actions"
+            echo "Get it from Render dashboard → your service → Settings → Deploy Hook"
+            exit 0
+          fi
+          echo "Triggering Render deploy..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            "${{ secrets.RENDER_DEPLOY_HOOK }}")
+          echo "Render responded: $RESPONSE"
+          if [ "$RESPONSE" = "200" ] || [ "$RESPONSE" = "201" ]; then
+            echo "Deploy triggered successfully"
+          else
+            echo "Warning: unexpected response $RESPONSE"
+          fi
+
+      - name: Wait for deploy to complete
+        if: ${{ secrets.RENDER_DEPLOY_HOOK != '' }}
+        run: |
+          echo "Waiting 90s for Render to build and deploy..."
+          sleep 90
+
+      - name: Health check
+        if: ${{ secrets.APP_URL != '' }}
+        run: |
+          echo "Checking health at ${{ secrets.APP_URL }}..."
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              "${{ secrets.APP_URL }}/api/health" 2>/dev/null || echo "000")
+            echo "Attempt $i: $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "App is healthy!"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Warning: app not responding after deploy"

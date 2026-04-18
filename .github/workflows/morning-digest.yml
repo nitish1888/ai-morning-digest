@@ -1,35 +1,52 @@
-name: Morning Digest Refresh
+name: Morning Digest (6 AM IST Daily)
 
 on:
   schedule:
-    # 6:00 AM IST = 00:30 UTC  (adjust to your timezone)
+    # 6:00 AM IST = 00:30 UTC
     - cron: "30 0 * * *"
-  workflow_dispatch:  # manual trigger button in GitHub UI
+  workflow_dispatch:
 
 jobs:
-  refresh:
+  morning-refresh:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger morning refresh
+      - name: Wake up Render app
         run: |
-          echo "Triggering digest refresh at $(date -u)..."
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+          echo "Waking app at $(date -u)..."
+          # First request wakes the free-tier app (~30s cold start)
+          curl -s -o /dev/null --max-time 60 \
+            "${{ secrets.APP_URL }}/api/health" || true
+          echo "Waiting 30s for cold start..."
+          sleep 30
+
+      - name: Trigger article refresh
+        run: |
+          echo "Triggering refresh..."
+          RESP=$(curl -s -w "\n%{http_code}" --max-time 10 \
             -X POST "${{ secrets.APP_URL }}/api/refresh")
-          echo "Response: $RESPONSE"
-          if [ "$RESPONSE" != "200" ]; then
-            echo "Warning: refresh returned $RESPONSE"
-          fi
+          CODE=$(echo "$RESP" | tail -1)
+          echo "Response: $CODE"
 
-      - name: Wait for scoring to finish
-        run: sleep 120
-
-      - name: Verify articles are ready
+      - name: Wait for LLM scoring
         run: |
-          DATA=$(curl -s "${{ secrets.APP_URL }}/api/articles")
-          COUNT=$(echo "$DATA" | python3 -c "import sys,json; print(len(json.load(sys.stdin).get('articles',[])))")
+          echo "Waiting for Groq to score articles (usually ~30s)..."
+          sleep 60
+
+      - name: Verify digest is ready
+        run: |
+          DATA=$(curl -s --max-time 15 "${{ secrets.APP_URL }}/api/articles")
+          COUNT=$(echo "$DATA" | python3 -c "
+          import sys, json
+          try:
+              d = json.load(sys.stdin)
+              print(len(d.get('articles', [])))
+          except:
+              print(0)
+          ")
           echo "Articles ready: $COUNT"
-          if [ "$COUNT" -lt 1 ]; then
+          if [ "$COUNT" -ge 1 ]; then
+            echo "Morning digest is live with $COUNT articles!"
+          else
             echo "Warning: no articles after refresh"
             exit 1
           fi
-          echo "Morning digest ready with $COUNT articles"
